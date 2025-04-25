@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\servicios;
 use App\proveedores;
+use App\clientes;
 
 class ServiciosController extends Controller
 {

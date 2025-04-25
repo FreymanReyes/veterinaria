@@ -8,31 +8,32 @@ use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role; // Importa la clase Role para asignar roles al usuario
 
 class RegisterController extends Controller
 {
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Register Controller
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
+    | Este controlador maneja el registro de nuevos usuarios así como su 
+    | validación y creación. Este controlador usa un trait para proporcionar 
+    | esta funcionalidad sin requerir código adicional.
     |
     */
 
     use RegistersUsers;
 
     /**
-     * Where to redirect users after registration.
+     * Donde redirigir a los usuarios después del registro.
      *
      * @var string
      */
     protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
-     * Create a new controller instance.
+     * Crear una nueva instancia del controlador.
      *
      * @return void
      */
@@ -42,7 +43,7 @@ class RegisterController extends Controller
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Obtener un validador para una solicitud de registro entrante.
      *
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
@@ -57,17 +58,24 @@ class RegisterController extends Controller
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Crear una nueva instancia de usuario después de un registro válido.
      *
      * @param  array  $data
      * @return \App\User
      */
     protected function create(array $data)
     {
-        return User::create([
+        // Crear el usuario
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+
+        // Asignar un rol al usuario recién creado (por ejemplo, rol 'user')
+        $role = Role::findByName('user'); // Puedes cambiar el rol por defecto según lo necesites
+        $user->assignRole($role);
+
+        return $user;
     }
 }

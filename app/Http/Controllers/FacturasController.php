@@ -11,7 +11,7 @@ use App\razas;
 use App\tipos_edad;
 use App\Productos;
 use App\Servicios;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class FacturasController extends Controller

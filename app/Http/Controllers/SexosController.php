@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Sexos; // Importa el modelo Sexo
+
 
 class SexosController extends Controller
 {
@@ -44,7 +46,7 @@ class SexosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Sexo $sexo)
+    public function show(Sexos $sexo)
     {
         
         
@@ -68,7 +70,7 @@ class SexosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Sexo $sexo)
+    public function update(Request $request,Sexos $sexo)
     {
         
        

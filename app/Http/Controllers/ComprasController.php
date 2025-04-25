@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\compras;
 use App\proveedores;
 use App\Productos;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class ComprasController extends Controller

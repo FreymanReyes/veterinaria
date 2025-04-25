@@ -5,7 +5,7 @@ use App\mascotas;
 use App\tipos_edad;
 use App\razas;
 use App\sexos;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 use Illuminate\Http\Request;
@@ -48,17 +48,14 @@ class MascotasController extends Controller
      */
     public function index()
     {
-      //   $mascotas= mascotas::paginate();
       $mascotas=DB::table('mascotas')
-        ->select('mascotas.id','mascotas.nombre as nombre','clientes.nombre as cliente','mascotas.edad AS edad','sexos.nombre as sexo','razas.tipo as t_raza','razas.nombre as raza','tipos_edads.nombre as tipo')
+        ->select('mascotas.id','mascotas.nombre as nombre','clientes.nombre as cliente','mascotas.edad AS edad','sexos.nombre as sexo','razas.nombre as raza','tipos_edads.nombre as tipo')
         ->join('sexos', 'mascotas.id_sexo', '=', 'sexos.id')
         ->join('razas', 'mascotas.id_raza', '=', 'razas.id')
         ->join('tipos_edads', 'mascotas.id_tipos_edades', '=', 'tipos_edads.id')
         ->join('clientes', 'mascotas.id_cliente', '=', 'clientes.id')
         ->get();
-      //  dd($mascotas);
         return view ('mascotas.index', compact('mascotas'));
-       
     }
 
     /**

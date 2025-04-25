@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Caffeinated\Shinobi\Models\Role;
-use Caffeinated\Shinobi\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
@@ -15,8 +15,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles= Role::paginate();
-        return view ('roles.index', compact('roles'));
+        $roles = Role::paginate();
+        return view('roles.index', compact('roles'));
     }
 
     /**
@@ -26,8 +26,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permissions=Permission::get();
-        return view ('roles.create', compact('permissions') );
+        $permissions = Permission::get();
+        return view('roles.create', compact('permissions'));
     }
 
     /**
@@ -40,14 +40,22 @@ class RoleController extends Controller
     {
         $this->validate($request, [
             'name' => ['required'],
-            'slug' => ['required','unique:roles'],
+            'slug' => ['required', 'unique:roles'],
             'description' => ['required'],
-            ]);
+        ]);
 
-        $role=Role::create($request->all());
+        $role = Role::create([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'description' => $request->description,
+        ]);
+
+        // Assign permissions to role if any permissions are selected
+        if ($request->has('permissions')) {
+            $role->syncPermissions($request->get('permissions'));
+        }
 
         return redirect()->route('roles.index')->with('success', 'Rol creado!');
-
     }
 
     /**
@@ -58,7 +66,7 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        return view ('roles.show' , compact('role'));
+        return view('roles.show', compact('role'));
     }
 
     /**
@@ -69,10 +77,9 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        $role=Role::find($id);
-        $permissions=Permission::get();
-        
-        return view ('roles.edit' , compact('role','permissions'));
+        $role = Role::find($id);
+        $permissions = Permission::get();
+        return view('roles.edit', compact('role', 'permissions'));
     }
 
     /**
@@ -82,17 +89,24 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Role $role)
+    public function update(Request $request, Role $role)
     {
         $this->validate($request, [
             'name' => ['required'],
             'slug' => ['required'],
             'description' => ['required'],
-            ]);
+        ]);
 
-            $role->permissions()->sync($request->get('permissions'));
+        $role->update([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'description' => $request->description,
+        ]);
 
-        $role->update($request->all());
+        // Sync permissions with role
+        if ($request->has('permissions')) {
+            $role->syncPermissions($request->get('permissions'));
+        }
 
         return redirect()->route('roles.edit', $role->id)->with('success', 'Rol editado!');
     }

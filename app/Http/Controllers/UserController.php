@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\User;
-
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Crypt;
-use Caffeinated\Shinobi\Models\Role;
 use Illuminate\Support\Facades\Hash;
-
+use Spatie\Permission\Models\Role; // Usamos el Role de Spatie
 
 class UserController extends Controller
 {
@@ -19,8 +16,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $usuarios= User::paginate();
-        return view ('usuarios.index', compact('usuarios'));
+        $usuarios = User::paginate();
+        return view('usuarios.index', compact('usuarios'));
     }
 
     /**
@@ -30,9 +27,9 @@ class UserController extends Controller
      */
     public function create()
     {
-
-        $roles=Role::get();
-        return view ('usuarios.create', compact('roles'));
+        // Obtener todos los roles disponibles para asignar a un nuevo usuario
+        $roles = Role::all();
+        return view('usuarios.create', compact('roles'));
     }
     
     /**
@@ -47,14 +44,18 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
-            ]);
-        
+            'roles' => ['required', 'array'], // Aseguramos que se seleccionen roles
+        ]);
 
-            $user= User::create([
-                'name' => $request['name'],
-                'email' => $request['email'],
-                'password' => Hash::make($request['password']),
-            ]);
+        // Crear el usuario
+        $user = User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+        ]);
+
+        // Asignar roles al usuario
+        $user->assignRole($request->get('roles'));
 
         return redirect()->route('users.index')->with('success', 'Usuario creado!');
     }
@@ -67,8 +68,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        
-        return view ('usuarios.show' , compact('user'));
+        return view('usuarios.show', compact('user'));
     }
 
     /**
@@ -79,10 +79,10 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $user=User::find($id);
-        $roles=Role::get();
-        
-        return view ('usuarios.edit' , compact('user','roles'));
+        $user = User::find($id);
+        // Obtener todos los roles disponibles para asignar
+        $roles = Role::all();
+        return view('usuarios.edit', compact('user', 'roles'));
     }
 
     /**
@@ -92,23 +92,22 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,User $user)
+    public function update(Request $request, User $user)
     {
-        
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required',
-            'roles' => 'required'
-            ]);
+            'roles' => 'required|array', // Aseguramos que se seleccionen roles
+        ]);
 
-        $user->roles()->sync($request->get('roles'));
+        // Sincronizar los roles del usuario
+        $user->syncRoles($request->get('roles'));
 
+        // Actualizar los datos del usuario
         $user->update($request->all());
 
         return redirect()->route('users.edit', $user->id)->with('success', 'Usuario editado!');
-
-
-        }
+    }
 
     /**
      * Remove the specified resource from storage.
