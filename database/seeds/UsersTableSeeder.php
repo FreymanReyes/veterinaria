@@ -1,23 +1,25 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Caffeinated\Shinobi\Models\Role;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use App\User;
 
 class UsersTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        factory(App\User::class, 2)->create();
-
-        Role::create([
-            'name'=>'Admin',
-            'slug'=>'admin',
-            'special'=>'all-access'
+        // Crear usuario admin
+        $admin = User::create([
+            'name' => 'Administrador',
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('123456789'), // Clave del 1 al 9
         ]);
+
+        // Crear rol admin
+        $role = Role::firstOrCreate(['name' => 'Admin']);
+
+        // Asignar rol al usuario
+        $admin->assignRole($role);
     }
 }
