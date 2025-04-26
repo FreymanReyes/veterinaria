@@ -61,15 +61,7 @@
                                             <td>{{$mascota->nombre}}</td>
                                             <td>{{$mascota->edad}}</td>
                                             <td>{{$mascota->tipo}}</td>
-                                            @if($mascota->t_raza == '1')
-                                            <td>
-                                            PERRO
-                                            </td>
-                                            @else
-                                            <td>
-                                            GATO
-                                            </td>
-                                            @endif
+                                            <td>PERRO</td>
                                             <td>{{$mascota->raza}}</td>
                                             <td>{{$mascota->sexo}}</td>
                                             <td>{{$mascota->cliente}}</td>
