@@ -35,7 +35,7 @@ Asegúrate de tener instalado en tu entorno local:
 
 ### 1. Clonar el proyecto
 
-```bash
+bash
 git clone https://github.com/tu-usuario/veterinaria.git
 cd veterinaria
 
